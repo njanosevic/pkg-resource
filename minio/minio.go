@@ -32,7 +32,7 @@ func Hello(name string) string {
 	return message
 }
 
-func setMinio(setMinio SetMinio) (*minio.Client, error) {
+func SetConfig(setMinio SetMinio) (*minio.Client, error) {
 	useSSL, errSsl := strconv.ParseBool(setMinio.UseSSL)
 	if errSsl != nil {
 		log.Println(errSsl)
@@ -47,7 +47,7 @@ func setMinio(setMinio SetMinio) (*minio.Client, error) {
 	return minioClient, errInit
 }
 
-func minioPutFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
+func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 	ctx := context.Background()
 
 	// Make a new bucket called dev-minio.
