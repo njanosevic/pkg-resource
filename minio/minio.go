@@ -6,6 +6,7 @@ import (
 	_ "github.com/joho/godotenv/autoload" // load .env file automatically
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"io"
 	"log"
 	"strconv"
 )
@@ -73,4 +74,19 @@ func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 	}
 
 	log.Printf("Successfully uploaded %s of size %d\n", putFile.Name, info.Size)
+}
+
+func AddBinObject(minioClient *minio.Client, bucket, filename string, file io.ReadSeeker, size int64) {
+	uploadInfo, err := minioClient.PutObject(
+		context.Background(),
+		bucket,
+		filename,
+		file,
+		size,
+		minio.PutObjectOptions{ContentType: "application/octet-stream"})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Successfully uploaded: ", uploadInfo)
 }
