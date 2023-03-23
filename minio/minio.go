@@ -90,3 +90,55 @@ func AddBinObject(minioClient *minio.Client, bucket, filename string, file io.Re
 	}
 	fmt.Println("Successfully uploaded: ", uploadInfo)
 }
+
+func RemoveAllFromBucket(minioClient *minio.Client, bucket string) {
+	//s3Client, err := minio.New("endpoint:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
+
+	objectCh := minioClient.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+		Prefix:    "",
+		Recursive: true,
+	})
+	for object := range objectCh {
+		if object.Err != nil {
+			fmt.Println(object.Err)
+			return
+		}
+		fmt.Println(object)
+	}
+
+	//ctx := context.Background()
+	//objectsCh := make(chan string)
+	//
+	//// Send object names that are needed to be removed to objectsCh
+	//go func() {
+	//	defer close(objectsCh)
+	//
+	//	doneCh := make(chan struct{})
+	//
+	//	// Indicate to our routine to exit cleanly upon return.
+	//	defer close(doneCh)
+	//
+	//	// List all objects from a bucket-name with a matching prefix.
+	//	for object := range minioClient.ListObjects(ctx, bucket, doneCh) {
+	//		if object.Err != nil {
+	//			log.Fatalln(object.Err)
+	//		}
+	//		objectsCh <- object.Key
+	//	}
+	//}()
+	//
+	//// Call RemoveObjects API
+	//errorCh := minioClient.RemoveObjects("my-bucketname", objectsCh)
+	//
+	//// Print errors received from RemoveObjects API
+	//for e := range errorCh {
+	//	log.Fatalln("Failed to remove " + e.ObjectName + ", error: " + e.Err.Error())
+	//}
+}
