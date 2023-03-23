@@ -111,17 +111,11 @@ func AddBinObject(minioClient *minio.Client, bucket, filename string, file io.Re
 }
 
 func RemoveAllFromBucket(minioClient *minio.Client, bucket string) {
-	//s3Client, err := minio.New("endpoint:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-
 	ctx, cancel := context.WithCancel(context.Background())
 
 	defer cancel()
 
 	objectCh := minioClient.ListObjects(ctx, bucket, minio.ListObjectsOptions{
-		Prefix:    "",
 		Recursive: true,
 	})
 	for object := range objectCh {
