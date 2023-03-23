@@ -76,6 +76,25 @@ func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 	log.Printf("Successfully uploaded %s of size %d\n", putFile.Name, info.Size)
 }
 
+func AddBucket(minioClient *minio.Client, bucket string, setMinio SetMinio) {
+	ctx := context.Background()
+
+	// Make a new bucket called dev-minio.
+	err := minioClient.MakeBucket(ctx, bucket, minio.MakeBucketOptions{Region: setMinio.Location})
+	if err != nil {
+		// Check to see if we already own this bucket (which happens if you run this twice)
+		exists, errBucketExists := minioClient.BucketExists(ctx, bucket)
+		if errBucketExists == nil && exists {
+			log.Printf("We already own %s\n", bucket)
+		} else {
+			log.Printf(err.Error())
+			return
+		}
+	} else {
+		log.Printf("Successfully created %s\n", bucket)
+	}
+}
+
 func AddBinObject(minioClient *minio.Client, bucket, filename string, file io.ReadSeeker, size int64) {
 	uploadInfo, err := minioClient.PutObject(
 		context.Background(),
