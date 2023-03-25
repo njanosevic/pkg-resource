@@ -114,18 +114,6 @@ func RemoveAllFromBucket(minioClient *minio.Client, bucket string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	//
-	//objectCh := minioClient.ListObjects(ctx, bucket, minio.ListObjectsOptions{
-	//	Recursive: true,
-	//})
-	//for object := range objectCh {
-	//	if object.Err != nil {
-	//		fmt.Println(object.Err)
-	//		return
-	//	}
-	//	fmt.Println(object)
-	//}
-
 	objectsCh := make(chan minio.ObjectInfo)
 
 	// Send object names that are needed to be removed to objectsCh
@@ -149,41 +137,4 @@ func RemoveAllFromBucket(minioClient *minio.Client, bucket string) {
 	for rErr := range minioClient.RemoveObjects(context.Background(), bucket, objectsCh, opts) {
 		fmt.Println("Error detected during deletion: ", rErr)
 	}
-
-	//// Call RemoveObjects API
-	//errorCh := minioClient.RemoveObjects("my-bucketname", objectsCh)
-	//
-	//// Print errors received from RemoveObjects API
-	//for e := range errorCh {
-	//	log.Fatalln("Failed to remove " + e.ObjectName + ", error: " + e.Err.Error())
-	//}
-
-	//ctx := context.Background()
-	//objectsCh := make(chan string)
-	//
-	//// Send object names that are needed to be removed to objectsCh
-	//go func() {
-	//	defer close(objectsCh)
-	//
-	//	doneCh := make(chan struct{})
-	//
-	//	// Indicate to our routine to exit cleanly upon return.
-	//	defer close(doneCh)
-	//
-	//	// List all objects from a bucket-name with a matching prefix.
-	//	for object := range minioClient.ListObjects(ctx, bucket, doneCh) {
-	//		if object.Err != nil {
-	//			log.Fatalln(object.Err)
-	//		}
-	//		objectsCh <- object.Key
-	//	}
-	//}()
-	//
-	//// Call RemoveObjects API
-	//errorCh := minioClient.RemoveObjects("my-bucketname", objectsCh)
-	//
-	//// Print errors received from RemoveObjects API
-	//for e := range errorCh {
-	//	log.Fatalln("Failed to remove " + e.ObjectName + ", error: " + e.Err.Error())
-	//}
 }
