@@ -131,3 +131,26 @@ func RemoveAllFromBucket(minioClient *minio.Client, bucket string) {
 		fmt.Println("Error detected during deletion: ", rErr)
 	}
 }
+
+func ReadAllFromBucket(minioClient *minio.Client, bucket string, storePath string) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
+
+	objectCh := minioClient.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+		Recursive: true,
+	})
+
+	for object := range objectCh {
+		if object.Err != nil {
+			fmt.Println(object.Err)
+			return
+		}
+		//fmt.Println(object.ETag, object.Key)
+		err := minioClient.FGetObject(context.Background(), bucket, object.Key, storePath+object.Key, minio.GetObjectOptions{})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+}
