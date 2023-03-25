@@ -146,11 +146,13 @@ func ReadAllFromBucket(minioClient *minio.Client, bucket string, storePath strin
 			fmt.Println(object.Err)
 			return
 		}
-		//fmt.Println(object.ETag, object.Key)
+
 		err := minioClient.FGetObject(context.Background(), bucket, object.Key, storePath+object.Key, minio.GetObjectOptions{})
 		if err != nil {
 			fmt.Println(err)
 			return
+		} else {
+			fmt.Println(object.ETag, storePath+object.Key, "stored locally")
 		}
 	}
 }
