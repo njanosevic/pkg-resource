@@ -26,13 +26,6 @@ type PutFile struct {
 	ContentType string
 }
 
-// Hello returns a greeting for the named person.
-func Hello(name string) string {
-	// Return a greeting that embeds the name in a message.
-	message := fmt.Sprintf("Hi, %v. Welcome!", name)
-	return message
-}
-
 func SetConfig(setMinio SetMinio) (*minio.Client, error) {
 	useSSL, errSsl := strconv.ParseBool(setMinio.UseSSL)
 	if errSsl != nil {
@@ -51,7 +44,7 @@ func SetConfig(setMinio SetMinio) (*minio.Client, error) {
 func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 	ctx := context.Background()
 
-	// Make a new bucket called dev-minio.
+	// Make a new bucket
 	err := minioClient.MakeBucket(ctx, putFile.Bucket, minio.MakeBucketOptions{Region: setMinio.Location})
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
@@ -66,7 +59,7 @@ func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 		log.Printf("Successfully created %s\n", putFile.Bucket)
 	}
 
-	// Upload the zip file with FPutObject
+	// Upload the file with FPutObject
 	info, err := minioClient.FPutObject(ctx, putFile.Bucket, putFile.Name, putFile.Path, minio.PutObjectOptions{ContentType: putFile.ContentType})
 	if err != nil {
 		log.Printf(err.Error())
@@ -79,7 +72,7 @@ func AddFile(minioClient *minio.Client, putFile PutFile, setMinio SetMinio) {
 func AddBucket(minioClient *minio.Client, bucket string, setMinio SetMinio) {
 	ctx := context.Background()
 
-	// Make a new bucket called dev-minio.
+	// Make a new bucket
 	err := minioClient.MakeBucket(ctx, bucket, minio.MakeBucketOptions{Region: setMinio.Location})
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
